@@ -1,0 +1,110 @@
+<html>
+<head>
+  <title>testing</title>
+  <script src="js/brython.js" type="text/javascript" charset="utf-8"></script>
+  <script src="codemirror/lib/codemirror.js" type="text/javascript" charset="utf-8"></script>
+  <link rel="stylesheet" href="codemirror/lib/codemirror.css" type="text/css" media="screen" title="no title" charset="utf-8">
+  <script src="codemirror/mode/python/python.js" type="text/javascript" charset="utf-8"></script>
+  
+  <style>
+  .console {
+    height:100px;
+    width:100%;
+    background:black;
+    color:white;
+    border:0px;
+    font-family: monospace;
+  }
+  .CodeMirror {
+  font-family: monospace;
+  height: 100px;
+  }
+  </style>
+</head>
+<body>
+ 
+  <h1>Bubble Sort</h1>
+  <textarea id="code1">
+def shortBubbleSort(alist):
+    exchanges = True
+    passnum = len(alist)-1
+    while passnum > 0 and exchanges:
+       exchanges = False
+       for i in range(passnum):
+           if alist[i]>alist[i+1]:
+               exchanges = True
+               temp = alist[i]
+               alist[i] = alist[i+1]
+               alist[i+1] = temp
+       passnum = passnum-1
+
+alist=[20,30,40,90,50,60,70,80,100,110]
+shortBubbleSort(alist)
+print(alist)
+  </textarea>
+  <input type="button" id="run1" value="run" onclick="run_python(editor1,'python_result1')">
+    <br/>
+  <textarea id="python_result1" readonly class="console">
+  </textarea>
+  
+  <h1>Print</h1>
+    <textarea id="code2">
+print("HELLO")
+    </textarea>
+  <input type="button" id="run2" value="run" onclick="run_python(editor2,'python_result2')">
+    <br/>
+  <textarea id="python_result2" readonly class="console">
+  </textarea>
+
+
+  <script>
+  var option = {
+          "lineNumbers": true,
+          "mode": {"name": "python", "globalVars": true}
+        };
+  var editor1 = CodeMirror.fromTextArea(document.getElementById('code1'),option);
+
+  var editor2 = CodeMirror.fromTextArea(document.getElementById('code2'),option);
+
+  function run_python(editor,result)
+  {
+    var ele = document.getElementById("temppython");
+    if(ele)
+    {
+      document.body.removeChild(ele);
+    }
+    
+    //clean the console
+    document.getElementById(result).value = "";
+    
+    //create the import to show on console
+    var val = "import sys\n";
+    val +="from browser import document\n"
+    val += "def write(data):\n";
+    val +="    document['"+result+"'].value += str(data)";
+    val += "\n"+"sys.stdout.write = write";
+    val += "\n" +"sys.stderr.write = write";
+    
+    //get script value
+    val += "\n" + editor.getValue();
+  
+    var py_script = document.createElement('script');
+    py_script.setAttribute("id","temppython");
+    //hide is. don't want to show on body
+    py_script.style.visibility = 'hidden';
+    
+    
+    py_script.type = 'text/python3';
+    //set python script
+    py_script.textContent = val;
+    document.body.appendChild(py_script)
+    // run brython(), searching Python code in script tags
+    brython({debug:1,py_tag:'script'});
+     
+    // clean up
+    document.body.removeChild(py_script)
+  }
+  </script>
+  
+</body>
+</html>
